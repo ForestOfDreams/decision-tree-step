@@ -1,6 +1,7 @@
 function init() {
 
     let canvas = document.getElementById('myCanvas');
+    let next = document.getElementById('next');
     let clearBtn = document.getElementById('clearBtn');
     let xorGenBtn = document.getElementById('xorGenBtn');
     let linearGenBtn = document.getElementById('linearGenBtn');
@@ -8,7 +9,7 @@ function init() {
     let defaultGenBtn = document.getElementById('defaultGenBtn');
     let context = canvas.getContext('2d');
     let displayTreeDiv = document.getElementById('displayTree');
-
+    let deep = 0;
     let NOT_SELECTED_COLOR_STYLE = '2px solid white';
     let SELECTED_COLOR_STYLE = '2px solid black';
     let colorSelectElements = document.getElementsByClassName('color-select');
@@ -33,12 +34,13 @@ function init() {
     canvas.addEventListener('mouseout', rebuildForestListener, false);
 
     canvas.addEventListener('mousemove', addPointsListener, false);
-
+    
+    
 
     for (let i = 0; i < colorSelectElements.length; i++) {
         colorSelectElements[i].addEventListener('click', selectColorListener, false);
     }
-
+    next.addEventListener('click', (e)=>rebuildForestListener(++deep), false);
     clearBtn.addEventListener('click', clearCanvasListener, false);
     xorGenBtn.addEventListener('click', generateXorPoints, false);
     linearGenBtn.addEventListener('click', generateLinearPoints, false);
@@ -64,7 +66,7 @@ function init() {
         }
     }
 
-    function rebuildForestListener() {
+    function rebuildForestListener(maxDeep) {
 
         // if (!addingPoints) return;
 
@@ -74,8 +76,10 @@ function init() {
 
         let threshold = Math.floor(points.length / 100);
         threshold = (threshold > 1) ? threshold : 1;
+        
         tree = new dt.DecisionTree({
             trainingSet: points,
+            maxTreeDepth: maxDeep,
             categoryAttr: 'color',
             minItemsCount: threshold
         }, treeToHtml);
@@ -84,6 +88,7 @@ function init() {
         displayPoints();
 
         displayTreeDiv.innerHTML = treeToHtml(tree.root);
+        
     }
 
     function displayTreePredictions() {
