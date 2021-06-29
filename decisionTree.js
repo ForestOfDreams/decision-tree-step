@@ -7,7 +7,7 @@ var dt = (function () {
      * @param builder - contains training set and
      *                  some configuration parameters
      */
-    function DecisionTree(builder, rebuilder) {
+    function DecisionTree(builder) {
         this.root = buildDecisionTree({
             trainingSet: builder.trainingSet,
             ignoredAttributes: arrayToHashSet(builder.ignoredAttributes),
@@ -15,7 +15,7 @@ var dt = (function () {
             minItemsCount: builder.minItemsCount || 1,
             entropyThrehold: builder.entropyThrehold || 0.01,
             maxTreeDepth: builder.maxTreeDepth || 70
-        }, rebuilder);
+        });
     }
 
     DecisionTree.prototype.predict = function (item) {
@@ -172,7 +172,7 @@ var dt = (function () {
     /**
      * Function for building decision tree
      */
-    function buildDecisionTree(builder, rebuilder) {
+    function buildDecisionTree(builder) {
 
         var trainingSet = builder.trainingSet;
         var minItemsCount = builder.minItemsCount;
@@ -279,20 +279,10 @@ var dt = (function () {
         builder.maxTreeDepth = maxTreeDepth - 1;
 
         builder.trainingSet = bestSplit.match;
+        var matchSubTree = buildDecisionTree(builder);
 
-        var matchSubTree = buildDecisionTree(builder, rebuilder);
-        document.getElementById('displayTree').innerHTML = rebuilder({
-            attribute: bestSplit.attribute,
-            predicate: bestSplit.predicate,
-            predicateName: bestSplit.predicateName,
-            pivot: bestSplit.pivot,
-            match: matchSubTree,
-            notMatch: notMatchSubTree,
-            matchedCount: bestSplit.match.length,
-            notMatchedCount: bestSplit.notMatch.length
-        });
         builder.trainingSet = bestSplit.notMatch;
-        var notMatchSubTree = buildDecisionTree(builder, rebuilder);
+        var notMatchSubTree = buildDecisionTree(builder);
         return {
             attribute: bestSplit.attribute,
             predicate: bestSplit.predicate,
