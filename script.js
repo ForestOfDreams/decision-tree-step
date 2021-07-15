@@ -84,6 +84,8 @@ function init() {
             minItemsCount: threshold
         });
 
+        console.log(tree.gains);
+
         displayTreePredictions();
         displayPoints();
 

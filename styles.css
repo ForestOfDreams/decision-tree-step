@@ -121,7 +121,7 @@ button:disabled {
     flex-direction: row;
 }
 
-#myCanvas {
+.canvas {
     max-height: 400px;
     max-width: 400px;
 }
