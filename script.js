@@ -1,12 +1,14 @@
 function init() {
 
     let canvas = document.getElementById('myCanvas');
+    let canvasGains = document.getElementById('myCanvas2');
     let next = document.getElementById('next');
     let clearBtn = document.getElementById('clearBtn');
     let xorGenBtn = document.getElementById('xorGenBtn');
     let linearGenBtn = document.getElementById('linearGenBtn');
     let insideGenBtn = document.getElementById('insideGenBtn');
     let defaultGenBtn = document.getElementById('defaultGenBtn');
+    let contextGains = canvasGains.getContext('2d');
     let context = canvas.getContext('2d');
     let displayTreeDiv = document.getElementById('displayTree');
     let deep = 0;
@@ -21,6 +23,7 @@ function init() {
     let color = colorSelectElements[0].getAttribute('label');
     let POINT_RADIUS = 3;
     let points = [];
+    let gains = [];
     let tree = null;
     let MAX_ALPHA = 128;
     let addingPoints = false;
@@ -63,6 +66,7 @@ function init() {
                 y: y,
                 color: color
             });
+            console.log(points);
         }
     }
 
@@ -84,7 +88,7 @@ function init() {
             minItemsCount: threshold
         });
 
-        console.log(tree.gains);
+        // console.log(tree.gains);
 
         displayTreePredictions();
         displayPoints();
@@ -152,6 +156,7 @@ function init() {
 
     function clearCanvasListener() {
         context.clearRect(0, 0, canvas.width, canvas.height);
+        gains = [];
         points = [];
         displayTreeDiv.innerHTML = '';
         deep = 0;
@@ -210,7 +215,7 @@ function init() {
     }
 
     generateXorPoints();
-    drawPoints();
+    drawPoints(context);
 
     function generateGroup(centerX, centerY, color, width, height) {
 
@@ -234,6 +239,7 @@ function init() {
 
     function generateXorPoints() {
         deep = 0;
+        gains = [];
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -246,6 +252,7 @@ function init() {
 
     function generateLinearPoints() {
         deep = 0;
+        gains = [];
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -256,6 +263,7 @@ function init() {
 
     function generateInsidePoints() {
         deep = 0;
+        gains = [];
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -266,6 +274,7 @@ function init() {
 
     function generateDefaultPoints() {
         deep = 0;
+        gains = [];
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -274,7 +283,7 @@ function init() {
         rebuildForestListener(++deep);
     }
 
-    function drawPoints() {
+    function drawPoints(context) {
         points.forEach(point => {
             drawCircle(context, point.x, point.y, 3, point.color);
         });
