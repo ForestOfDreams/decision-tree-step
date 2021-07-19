@@ -43,7 +43,10 @@ function init() {
     for (let i = 0; i < colorSelectElements.length; i++) {
         colorSelectElements[i].addEventListener('click', selectColorListener, false);
     }
-    next.addEventListener('click', () => rebuildForestListener(++deep), false);
+    next.addEventListener('click', () => {
+        rebuildForestListener(++deep);
+        gains = 0;
+    }, false);
     clearBtn.addEventListener('click', clearCanvasListener, false);
     xorGenBtn.addEventListener('click', generateXorPoints, false);
     linearGenBtn.addEventListener('click', generateLinearPoints, false);
@@ -91,7 +94,7 @@ function init() {
         tree.gains.forEach(gain => {
             drawGain(gains, gain * 400, contextGains);
             if (gains < 400)
-                gains++;
+                gains += 4;
         })
 
         displayTreePredictions();
