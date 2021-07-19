@@ -23,7 +23,7 @@ function init() {
     let color = colorSelectElements[0].getAttribute('label');
     let POINT_RADIUS = 3;
     let points = [];
-    let gains = [];
+    let gains = 0;
     let tree = null;
     let MAX_ALPHA = 128;
     let addingPoints = false;
@@ -73,7 +73,6 @@ function init() {
     function rebuildForestListener(maxDeep) {
 
         // if (!addingPoints) return;
-
         if (points.length === 0) return;
 
         addingPoints = false;
@@ -88,13 +87,27 @@ function init() {
             minItemsCount: threshold
         });
 
-        // console.log(tree.gains);
+        console.log(tree.gains);
+        tree.gains.forEach(gain => {
+            drawGain(gains, gain * 400, contextGains);
+            if (gains < 400)
+                gains++;
+        })
 
         displayTreePredictions();
         displayPoints();
 
         displayTreeDiv.innerHTML = treeToHtml(tree.root);
         
+    }
+
+    function drawGain(x, y, canvas) {
+        canvas.beginPath();
+        canvas.arc(x, y, 2, 0, 2 * Math.PI, true);
+        canvas.fillStyle = 'rgb(0, 0, 0)';
+        canvas.fill();
+        canvas.closePath();
+        canvas.stroke();
     }
 
     function displayTreePredictions() {
@@ -156,7 +169,8 @@ function init() {
 
     function clearCanvasListener() {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        gains = [];
+        contextGains.clearRect(0, 0, canvas.width, canvas.height);
+        gains = 0;
         points = [];
         displayTreeDiv.innerHTML = '';
         deep = 0;
@@ -238,8 +252,9 @@ function init() {
     }
 
     function generateXorPoints() {
+        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = [];
+        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -251,8 +266,9 @@ function init() {
     }
 
     function generateLinearPoints() {
+        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = [];
+        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -262,8 +278,9 @@ function init() {
     }
 
     function generateInsidePoints() {
+        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = [];
+        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -273,8 +290,9 @@ function init() {
     }
 
     function generateDefaultPoints() {
+        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = [];
+        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
