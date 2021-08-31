@@ -37,8 +37,7 @@ function init() {
     // canvas.addEventListener('mouseout', rebuildForestListener, false);
 
     canvas.addEventListener('mousemove', addPointsListener, false);
-    
-    
+
 
     for (let i = 0; i < colorSelectElements.length; i++) {
         colorSelectElements[i].addEventListener('click', selectColorListener, false);
@@ -82,7 +81,7 @@ function init() {
 
         let threshold = Math.floor(points.length / 100);
         threshold = (threshold > 1) ? threshold : 1;
-        
+
         tree = new dt.DecisionTree({
             trainingSet: points,
             maxTreeDepth: maxDeep,
@@ -101,7 +100,7 @@ function init() {
         displayPoints();
 
         displayTreeDiv.innerHTML = treeToHtml(tree.root);
-        
+
     }
 
     function drawGain(x, y, canvas) {
@@ -239,7 +238,7 @@ function init() {
         let a = width;
         let b = height;
 
-        for (let i = 0; i < 40; ++i) {
+        for (let i = 0; i < 10; ++i) {
 
             let r = a * Math.random();
             let fi = 2 * Math.PI * Math.random();
@@ -261,10 +260,10 @@ function init() {
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
-        generateGroup(centerX / 3, centerY / 3, "#33CCFF", 18, 18);
-        generateGroup(centerX * 2.5 / 4, centerY * 2.5 / 4, "#009933", 18, 18);
-        generateGroup(centerX / 3, centerY * 2.5 / 4, "#FF6600", 18, 18);
-        generateGroup(centerX * 2.5 / 4, centerY / 3, "#FFC508", 18, 18);
+        generateGroup(centerX / 4, centerY / 4, "#33CCFF", 25, 25);
+        generateGroup(centerX / 4 * 3, centerY * 2.5 / 4, "#009933", 25, 25);
+        generateGroup(centerX / 4, centerY / 4 * 3, "#FF6600", 25, 25);
+        generateGroup(centerX / 4 * 3, centerY / 4, "#FFC508", 25, 25);
         rebuildForestListener(++deep);
     }
 
@@ -275,8 +274,8 @@ function init() {
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
-        generateGroup(centerX / 2, centerY / 3, "#33CCFF", 18, 18);
-        generateGroup(centerX / 2, centerY * 2.5 / 4, "#009933", 18, 18);
+        generateGroup(centerX / 4 * 3, centerY / 4, "#33CCFF", 35, 35);
+        generateGroup(centerX / 3, centerY / 4 * 3, "#009933", 35, 35);
         rebuildForestListener(++deep);
     }
 
@@ -288,7 +287,7 @@ function init() {
         let centerX = canvas.width;
         let centerY = canvas.height;
         generateGroup(centerX / 2, centerY / 2, "#33CCFF", 18, 18);
-        generateGroup(centerX / 2, centerY / 2, "#009933", 40, 40);
+        generateGroup(centerX / 2, centerY / 2, "#009933", 60, 60);
         rebuildForestListener(++deep);
     }
 
