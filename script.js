@@ -1,17 +1,17 @@
 function init() {
 
     let canvas = document.getElementById('myCanvas');
-    let canvasGains = document.getElementById('myCanvas2');
     let next = document.getElementById('next');
+    let nextGain = document.getElementById('nextGain');
     let clearBtn = document.getElementById('clearBtn');
     let xorGenBtn = document.getElementById('xorGenBtn');
     let linearGenBtn = document.getElementById('linearGenBtn');
     let insideGenBtn = document.getElementById('insideGenBtn');
     let defaultGenBtn = document.getElementById('defaultGenBtn');
-    let contextGains = canvasGains.getContext('2d');
     let context = canvas.getContext('2d');
     let displayTreeDiv = document.getElementById('displayTree');
     let deep = 0;
+    let k = 1;
     let NOT_SELECTED_COLOR_STYLE = '2px solid white';
     let SELECTED_COLOR_STYLE = '2px solid black';
     let colorSelectElements = document.getElementsByClassName('color-select');
@@ -23,7 +23,6 @@ function init() {
     let color = colorSelectElements[0].getAttribute('label');
     let POINT_RADIUS = 3;
     let points = [];
-    let gains = 0;
     let tree = null;
     let MAX_ALPHA = 128;
     let addingPoints = false;
@@ -37,16 +36,14 @@ function init() {
     // canvas.addEventListener('mouseout', rebuildForestListener, false);
 
     canvas.addEventListener('mousemove', addPointsListener, false);
-    
-    
+
+
 
     for (let i = 0; i < colorSelectElements.length; i++) {
         colorSelectElements[i].addEventListener('click', selectColorListener, false);
     }
-    next.addEventListener('click', () => {
-        rebuildForestListener(++deep);
-        gains = 0;
-    }, false);
+    next.addEventListener('click', () => rebuildForestListener(++deep, points.length - 1), false);
+    nextGain.addEventListener('click', () => rebuildForestListener(deep, ++k), false);
     clearBtn.addEventListener('click', clearCanvasListener, false);
     xorGenBtn.addEventListener('click', generateXorPoints, false);
     linearGenBtn.addEventListener('click', generateLinearPoints, false);
@@ -69,48 +66,32 @@ function init() {
                 y: y,
                 color: color
             });
-            console.log(points);
         }
     }
 
-    function rebuildForestListener(maxDeep) {
+    function rebuildForestListener(maxDeep, k) {
 
         // if (!addingPoints) return;
+
         if (points.length === 0) return;
 
         addingPoints = false;
 
         let threshold = Math.floor(points.length / 100);
         threshold = (threshold > 1) ? threshold : 1;
-        
+
         tree = new dt.DecisionTree({
             trainingSet: points,
             maxTreeDepth: maxDeep,
             categoryAttr: 'color',
             minItemsCount: threshold
-        });
-
-        console.log(tree.gains);
-        tree.gains.forEach(gain => {
-            drawGain(gains, gain * 400, contextGains);
-            if (gains < 400)
-                gains += 4;
-        })
+        }, k);
 
         displayTreePredictions();
         displayPoints();
 
         displayTreeDiv.innerHTML = treeToHtml(tree.root);
-        
-    }
 
-    function drawGain(x, y, canvas) {
-        canvas.beginPath();
-        canvas.arc(x, y, 2, 0, 2 * Math.PI, true);
-        canvas.fillStyle = 'rgb(0, 0, 0)';
-        canvas.fill();
-        canvas.closePath();
-        canvas.stroke();
     }
 
     function displayTreePredictions() {
@@ -172,8 +153,6 @@ function init() {
 
     function clearCanvasListener() {
         context.clearRect(0, 0, canvas.width, canvas.height);
-        contextGains.clearRect(0, 0, canvas.width, canvas.height);
-        gains = 0;
         points = [];
         displayTreeDiv.innerHTML = '';
         deep = 0;
@@ -232,7 +211,7 @@ function init() {
     }
 
     generateXorPoints();
-    drawPoints(context);
+    drawPoints();
 
     function generateGroup(centerX, centerY, color, width, height) {
 
@@ -255,9 +234,7 @@ function init() {
     }
 
     function generateXorPoints() {
-        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
@@ -265,46 +242,44 @@ function init() {
         generateGroup(centerX * 2.5 / 4, centerY * 2.5 / 4, "#009933", 18, 18);
         generateGroup(centerX / 3, centerY * 2.5 / 4, "#FF6600", 18, 18);
         generateGroup(centerX * 2.5 / 4, centerY / 3, "#FFC508", 18, 18);
-        rebuildForestListener(++deep);
+        k = 0;
+        rebuildForestListener(++deep, ++k);
     }
 
     function generateLinearPoints() {
-        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
         generateGroup(centerX / 2, centerY / 3, "#33CCFF", 18, 18);
         generateGroup(centerX / 2, centerY * 2.5 / 4, "#009933", 18, 18);
-        rebuildForestListener(++deep);
+        k = points.length;
+        rebuildForestListener(++deep, ++k);
     }
 
     function generateInsidePoints() {
-        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
         generateGroup(centerX / 2, centerY / 2, "#33CCFF", 18, 18);
         generateGroup(centerX / 2, centerY / 2, "#009933", 40, 40);
-        rebuildForestListener(++deep);
+        k = points.length;
+        rebuildForestListener(++deep, ++k);
     }
 
     function generateDefaultPoints() {
-        contextGains.clearRect(0, 0, canvas.width, canvas.height);
         deep = 0;
-        gains = 0;
         points = [];
         let centerX = canvas.width;
         let centerY = canvas.height;
         generateGroup(centerX / 2, centerY / 2, "#33CCFF", 70, 70);
         generateGroup(centerX / 2, centerY / 2, "#009933", 70, 70);
-        rebuildForestListener(++deep);
+        k = points.length;
+        rebuildForestListener(++deep, ++k);
     }
 
-    function drawPoints(context) {
+    function drawPoints() {
         points.forEach(point => {
             drawCircle(context, point.x, point.y, 3, point.color);
         });
