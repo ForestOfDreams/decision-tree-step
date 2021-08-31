@@ -7,8 +7,7 @@ var dt = (function () {
      * @param builder - contains training set and
      *                  some configuration parameters
      */
-    function DecisionTree(builder) {
-        this.gains = [];
+    function DecisionTree(builder, k) {
         this.root = buildDecisionTree({
             trainingSet: builder.trainingSet,
             ignoredAttributes: arrayToHashSet(builder.ignoredAttributes),
@@ -16,7 +15,7 @@ var dt = (function () {
             minItemsCount: builder.minItemsCount || 1,
             entropyThrehold: builder.entropyThrehold || 0.01,
             maxTreeDepth: builder.maxTreeDepth || 70
-        }, this.gains);
+        }, k);
     }
 
     DecisionTree.prototype.predict = function (item) {
@@ -114,7 +113,7 @@ var dt = (function () {
         var notMatch = [];
 
         var item,
-            attrValue;
+          attrValue;
 
         for (var i = items.length - 1; i >= 0; i--) {
             item = items[i];
@@ -173,8 +172,7 @@ var dt = (function () {
     /**
      * Function for building decision tree
      */
-    function buildDecisionTree(builder, gains) {
-
+    function buildDecisionTree(builder, k) {
         var trainingSet = builder.trainingSet;
         var minItemsCount = builder.minItemsCount;
         var categoryAttr = builder.categoryAttr;
@@ -210,7 +208,7 @@ var dt = (function () {
         // into subsets with smaller values of entropy (produces informational gain)
         var bestSplit = {gain: 0};
 
-        for (var i = trainingSet.length - 1; i >= 0; i--) {
+        for (var i = k; i >= 0; i--) {
             var item = trainingSet[i];
 
             // iterating over all attributes of item
@@ -257,8 +255,9 @@ var dt = (function () {
                 newEntropy /= trainingSet.length;
                 var currGain = initialEntropy - newEntropy;
 
+                document.querySelector(".gain").innerHTML = currGain;
+
                 if (currGain > bestSplit.gain) {
-                    gains.push(currGain);
                     // remember pairs 'attribute-predicate-value'
                     // which provides informational gain
                     bestSplit = currSplit;
@@ -281,10 +280,10 @@ var dt = (function () {
         builder.maxTreeDepth = maxTreeDepth - 1;
 
         builder.trainingSet = bestSplit.match;
-        var matchSubTree = buildDecisionTree(builder, gains);
+        var matchSubTree = buildDecisionTree(builder, k);
 
         builder.trainingSet = bestSplit.notMatch;
-        var notMatchSubTree = buildDecisionTree(builder, gains);
+        var notMatchSubTree = buildDecisionTree(builder, k);
         return {
             attribute: bestSplit.attribute,
             predicate: bestSplit.predicate,
@@ -302,9 +301,9 @@ var dt = (function () {
      */
     function predict(tree, item) {
         var attr,
-            value,
-            predicate,
-            pivot;
+          value,
+          predicate,
+          pivot;
 
         // Traversing tree from the root to leaf
         while (true) {
